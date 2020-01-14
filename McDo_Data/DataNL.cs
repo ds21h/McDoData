@@ -9,24 +9,30 @@ using System.Threading.Tasks;
 
 namespace McDoData
 {
-    internal class NlData
+    internal class DataNL
     {
         private static string cUrl = "https://www.mcdonalds.com/googleapps/GoogleRestaurantLocAction.do?method=searchLocation&latitude=51.9851034&longitude=5.898729600000024&radius=500&maxResults=300&country=nl&language=nl-nl&showClosed=&hours24Text=Open%2024%20hr";
-        private bool mComplete;
         private String mResData;
-        private List<RestoNl> mRestos;
+        private List<RestoNL> mRestos;
 
         internal event EventHandler eReadComplete;
 
-        internal NlData()
+        internal List<Resto> xRestos()
         {
-            mComplete = false;
-            mRestos = new List<RestoNl>();
+            List<Resto> lRestos;
+
+            lRestos = mRestos.Cast<Resto>().ToList();
+            return lRestos;
+        }
+ 
+        internal DataNL()
+        {
+            mRestos = new List<RestoNL>();
         }
 
         internal void xInit()
         {
-            mComplete = false;
+            mRestos.Clear();
             sGetData();
         }
 
@@ -50,7 +56,7 @@ namespace McDoData
                 if (lResponse.IsSuccessStatusCode)
                 {
                     mResData = await lResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    mComplete = true;
+                    sProcessData();
                 }
                 lResponse.Dispose();
                 lHandler = eReadComplete;
@@ -63,25 +69,22 @@ namespace McDoData
             lClient.Dispose();
         }
 
-        internal void xProcessData()
+        private void sProcessData()
         {
             JObject lReply;
             JArray lRestos;
             JObject lResto;
-            RestoNl lRestNl;
+            RestoNL lRestNl;
             int lCount;
 
             mRestos.Clear();
-            if (mComplete)
+            lReply = JObject.Parse(mResData);
+            lRestos = lReply.Value<JArray>("features");
+            for (lCount = 0; lCount < lRestos.Count; lCount++)
             {
-                lReply = JObject.Parse(mResData);
-                lRestos = lReply.Value<JArray>("features");
-                for (lCount = 0; lCount < lRestos.Count; lCount++)
-                {
-                    lResto = (JObject)lRestos.ElementAt(lCount);
-                    lRestNl = new RestoNl(lResto);
-                    mRestos.Add(lRestNl);
-                }
+                lResto = (JObject)lRestos.ElementAt(lCount);
+                lRestNl = new RestoNL(lResto);
+                mRestos.Add(lRestNl);
             }
         }
     }

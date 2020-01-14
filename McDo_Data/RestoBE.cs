@@ -1,0 +1,20 @@
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace McDoData
+{
+    class RestoBE : Resto
+    {
+        internal RestoBE(JObject pResto) : base()
+        {
+            bCountry = CountryBE;
+            //sProcessGeo(pResto);
+            //sProcessProperties(pResto);
+            //sProcessHours(pResto);
+        }
+    }
+}

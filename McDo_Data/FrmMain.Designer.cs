@@ -31,12 +31,16 @@
             this.BtnNL = new System.Windows.Forms.Button();
             this.DgrdResult = new System.Windows.Forms.DataGridView();
             this.PnlControl = new System.Windows.Forms.Panel();
+            this.BtnBE = new System.Windows.Forms.Button();
             this.PnlResult = new System.Windows.Forms.Panel();
+            this.ClmID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmDescr = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmPostalCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmCity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ClmLongitude = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ClmLatitude = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmMonday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmMondayDrive = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmTuesday = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,7 +55,6 @@
             this.ClmSaturdayDrive = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmSunday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmSundayDrive = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BtnBE = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DgrdResult)).BeginInit();
             this.PnlControl.SuspendLayout();
             this.PnlResult.SuspendLayout();
@@ -73,11 +76,14 @@
             this.DgrdResult.AllowUserToDeleteRows = false;
             this.DgrdResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgrdResult.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ClmID,
             this.ClmName,
             this.ClmDescr,
             this.ClmAddress,
             this.ClmPostalCode,
             this.ClmCity,
+            this.ClmLongitude,
+            this.ClmLatitude,
             this.ClmMonday,
             this.ClmMondayDrive,
             this.ClmTuesday,
@@ -111,6 +117,16 @@
             this.PnlControl.Size = new System.Drawing.Size(1090, 46);
             this.PnlControl.TabIndex = 2;
             // 
+            // BtnBE
+            // 
+            this.BtnBE.Location = new System.Drawing.Point(93, 12);
+            this.BtnBE.Name = "BtnBE";
+            this.BtnBE.Size = new System.Drawing.Size(75, 23);
+            this.BtnBE.TabIndex = 1;
+            this.BtnBE.Text = "BE";
+            this.BtnBE.UseVisualStyleBackColor = true;
+            this.BtnBE.Click += new System.EventHandler(this.BtnBE_Click);
+            // 
             // PnlResult
             // 
             this.PnlResult.Controls.Add(this.DgrdResult);
@@ -119,6 +135,14 @@
             this.PnlResult.Name = "PnlResult";
             this.PnlResult.Size = new System.Drawing.Size(1090, 579);
             this.PnlResult.TabIndex = 3;
+            // 
+            // ClmID
+            // 
+            this.ClmID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.ClmID.HeaderText = "ID";
+            this.ClmID.Name = "ClmID";
+            this.ClmID.ReadOnly = true;
+            this.ClmID.Width = 43;
             // 
             // ClmName
             // 
@@ -159,6 +183,22 @@
             this.ClmCity.Name = "ClmCity";
             this.ClmCity.ReadOnly = true;
             this.ClmCity.Width = 49;
+            // 
+            // ClmLongitude
+            // 
+            this.ClmLongitude.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.ClmLongitude.HeaderText = "Longitude";
+            this.ClmLongitude.Name = "ClmLongitude";
+            this.ClmLongitude.ReadOnly = true;
+            this.ClmLongitude.Width = 79;
+            // 
+            // ClmLatitude
+            // 
+            this.ClmLatitude.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.ClmLatitude.HeaderText = "Latitude";
+            this.ClmLatitude.Name = "ClmLatitude";
+            this.ClmLatitude.ReadOnly = true;
+            this.ClmLatitude.Width = 70;
             // 
             // ClmMonday
             // 
@@ -272,24 +312,14 @@
             this.ClmSundayDrive.ReadOnly = true;
             this.ClmSundayDrive.Width = 57;
             // 
-            // BtnBE
-            // 
-            this.BtnBE.Location = new System.Drawing.Point(93, 12);
-            this.BtnBE.Name = "BtnBE";
-            this.BtnBE.Size = new System.Drawing.Size(75, 23);
-            this.BtnBE.TabIndex = 1;
-            this.BtnBE.Text = "BE";
-            this.BtnBE.UseVisualStyleBackColor = true;
-            this.BtnBE.Click += new System.EventHandler(this.BtnBE_Click);
-            // 
-            // Form1
+            // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1090, 625);
             this.Controls.Add(this.PnlResult);
             this.Controls.Add(this.PnlControl);
-            this.Name = "Form1";
+            this.Name = "FrmMain";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.DgrdResult)).EndInit();
             this.PnlControl.ResumeLayout(false);
@@ -304,11 +334,15 @@
         private System.Windows.Forms.DataGridView DgrdResult;
         private System.Windows.Forms.Panel PnlControl;
         private System.Windows.Forms.Panel PnlResult;
+        private System.Windows.Forms.Button BtnBE;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClmID;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmDescr;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmAddress;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmPostalCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmCity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClmLongitude;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClmLatitude;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmMonday;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmMondayDrive;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmTuesday;
@@ -323,7 +357,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSaturdayDrive;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSunday;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSundayDrive;
-        private System.Windows.Forms.Button BtnBE;
     }
 }
 

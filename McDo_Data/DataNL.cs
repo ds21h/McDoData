@@ -59,12 +59,12 @@ namespace McDoData
                     sProcessData();
                 }
                 lResponse.Dispose();
-                lHandler = eReadComplete;
-                lHandler.Invoke(this, null);
             } catch (Exception pExc)
             {
 
             }
+            lHandler = eReadComplete;
+            lHandler.Invoke(this, null);
             lRequest.Dispose();
             lClient.Dispose();
         }

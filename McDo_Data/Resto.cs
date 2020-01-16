@@ -14,13 +14,16 @@ namespace McDoData
         protected string bCountry { get; set; }
 
         protected double bLongitude { get; set; }
+        internal double xLongitude { get { return bLongitude; } }
         protected double bLatitude { get; set; }
+        internal double xLatitude { get { return bLatitude; } }
 
         protected String bName { get; set; }
         internal String xName { get { return bName; } }
         protected String bDescr { get; set; }
         internal String xDescr { get { return bDescr; } }
         protected String bID { get; set; }
+        internal String xID { get { return bID; } }
         protected String bAddress { get; set; }
         internal String xAddress { get { return bAddress; } }
         protected String bPostalCode { get; set; }

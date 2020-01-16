@@ -16,7 +16,7 @@ namespace McDoData
         private DataBE mDataBE;
         private List<Resto> mRestos;
 
-        private delegate void dFillResult();
+        private delegate void dFillResult(bool pFree);
         private dFillResult hFillResult;
 
         public FrmMain()
@@ -26,6 +26,7 @@ namespace McDoData
             mDataNL = new DataNL();
             mDataNL.eReadComplete += hCompleteNL;
             mDataBE = new DataBE();
+            mDataBE.eListComplete += hListCompleteBE;
             mDataBE.eReadComplete += hCompleteBE;
         }
 
@@ -52,21 +53,32 @@ namespace McDoData
         private void hCompleteNL(Object pSender, EventArgs pArgs)
         {
             mRestos = mDataNL.xRestos();
-            this.Invoke(hFillResult);
+            this.Invoke(hFillResult, true);
+        }
+
+        private void hListCompleteBE(Object pSender, EventArgs pArgs)
+        {
+            mRestos = mDataBE.xRestos();
+            this.Invoke(hFillResult, false);
         }
 
         private void hCompleteBE(Object pSender, EventArgs pArgs)
         {
             mRestos = mDataBE.xRestos();
-            this.Invoke(hFillResult);
+            this.Invoke(hFillResult, true);
         }
 
-        private void sFillResult()
+        private void sFillResult(bool pFree)
         {
+            DgrdResult.RowCount = 0;
+            DgrdResult.Invalidate();
             DgrdResult.RowCount = mRestos.Count;
             DgrdResult.Invalidate();
-            BtnNL.Enabled = true;
-            BtnBE.Enabled = true;
+            if (pFree)
+            {
+                BtnNL.Enabled = true;
+                BtnBE.Enabled = true;
+            }
         }
 
         private void DgrdResult_CellValueNeeded(object sender, DataGridViewCellValueEventArgs pArgs)
@@ -79,60 +91,69 @@ namespace McDoData
                 switch (pArgs.ColumnIndex)
                 {
                     case 0:
-                        pArgs.Value = lResto.xName;
+                        pArgs.Value = lResto.xID;
                         break;
                     case 1:
-                        pArgs.Value = lResto.xDescr;
+                        pArgs.Value = lResto.xName;
                         break;
                     case 2:
-                        pArgs.Value = lResto.xAddress;
+                        pArgs.Value = lResto.xDescr;
                         break;
                     case 3:
-                        pArgs.Value = lResto.xPostalCode;
+                        pArgs.Value = lResto.xAddress;
                         break;
                     case 4:
-                        pArgs.Value = lResto.xCity;
+                        pArgs.Value = lResto.xPostalCode;
                         break;
                     case 5:
-                        pArgs.Value = lResto.xHoursMonday;
+                        pArgs.Value = lResto.xCity;
                         break;
                     case 6:
-                        pArgs.Value = lResto.xDriveHoursMonday;
+                        pArgs.Value = lResto.xLongitude.ToString();
                         break;
                     case 7:
-                        pArgs.Value = lResto.xHoursTuesday;
+                        pArgs.Value = lResto.xLatitude.ToString();
                         break;
                     case 8:
-                        pArgs.Value = lResto.xDriveHoursTuesday;
+                        pArgs.Value = lResto.xHoursMonday;
                         break;
                     case 9:
-                        pArgs.Value = lResto.xHoursWednesday;
+                        pArgs.Value = lResto.xDriveHoursMonday;
                         break;
                     case 10:
-                        pArgs.Value = lResto.xDriveHoursWednesday;
+                        pArgs.Value = lResto.xHoursTuesday;
                         break;
                     case 11:
-                        pArgs.Value = lResto.xHoursThursday;
+                        pArgs.Value = lResto.xDriveHoursTuesday;
                         break;
                     case 12:
-                        pArgs.Value = lResto.xDriveHoursThursday;
+                        pArgs.Value = lResto.xHoursWednesday;
                         break;
                     case 13:
-                        pArgs.Value = lResto.xHoursFriday;
+                        pArgs.Value = lResto.xDriveHoursWednesday;
                         break;
                     case 14:
-                        pArgs.Value = lResto.xDriveHoursFriday;
+                        pArgs.Value = lResto.xHoursThursday;
                         break;
                     case 15:
-                        pArgs.Value = lResto.xHoursSaturday;
+                        pArgs.Value = lResto.xDriveHoursThursday;
                         break;
                     case 16:
-                        pArgs.Value = lResto.xDriveHoursSaturday;
+                        pArgs.Value = lResto.xHoursFriday;
                         break;
                     case 17:
-                        pArgs.Value = lResto.xHoursSunday;
+                        pArgs.Value = lResto.xDriveHoursFriday;
                         break;
                     case 18:
+                        pArgs.Value = lResto.xHoursSaturday;
+                        break;
+                    case 19:
+                        pArgs.Value = lResto.xDriveHoursSaturday;
+                        break;
+                    case 20:
+                        pArgs.Value = lResto.xHoursSunday;
+                        break;
+                    case 21:
                         pArgs.Value = lResto.xDriveHoursSunday;
                         break;
                 }

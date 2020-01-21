@@ -9,10 +9,66 @@ namespace McDoData
 {
     class RestoBE : Resto
     {
+        private struct WordSplit
+        {
+            internal string Word;
+            internal string Rest;
+        }
+
+        private struct RestoTimes
+        {
+            internal string RestoOpen;
+            internal string RestoClose;
+            internal string DriveClose;
+
+            internal RestoTimes(string pInit)
+            {
+                RestoOpen = pInit;
+                RestoClose = pInit;
+                DriveClose = pInit;
+            }
+        }
+
+        private readonly string[] mDays = { "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag" };
+        private RestoTimes[] mRestoTimes;
+        private readonly string[] mServiceNames = { "Wifi", "Drive", "Play", "Parking", "BreakfastLight", "Terrace", "DebitCard", "E-cheque", "EasyOrder", "LateOpen", "EVCharge", "BreakfastFull", "Wheelchair", "TableService", "Delivery" };
+        private bool[] mServices;
+
+        private RestoBE() : base()
+        {
+            sInitRestoTimes();
+            sInitServices();
+        }
+
         internal RestoBE(JObject pResto) : base()
         {
+            sInitRestoTimes();
+            sInitServices();
+
             bCountry = CountryBE;
             sProcessResto(pResto);
+        }
+
+        private void sInitRestoTimes()
+        {
+            int lCount;
+
+            mRestoTimes = new RestoTimes[mDays.Length];
+            for (lCount = 0; lCount < mRestoTimes.Length; lCount++)
+            {
+                mRestoTimes[lCount] = new RestoTimes("");
+            }
+        }
+
+        private void sInitServices()
+        {
+            int lCount;
+
+            mServices = new bool[mServiceNames.Length];
+            for (lCount = 0; lCount < mServices.Length; lCount++)
+            {
+               mServices[lCount] = false;
+            }
         }
 
         internal void xProcesDetails(JObject pDetails)
@@ -20,6 +76,9 @@ namespace McDoData
             JValue lValue;
             object lObject;
             JObject lResto;
+            JArray lServices;
+            int lCount;
+            int lService;
             String lResult;
             string lStreet = "";
             string lNumber = "";
@@ -69,6 +128,20 @@ namespace McDoData
                             lOpeningHours = (String)lValue;
                             sProcessOpeningHours(lOpeningHours);
                         }
+                        lObject = lResto["services"];
+                        if (lObject != null)
+                        {
+                            lServices = (JArray)lObject;
+                            for (lCount = 0; lCount < lServices.Count; lCount++)
+                            {
+                                lService = (int)lServices[lCount];
+                                if (lService < mServices.Length)
+                                {
+                                    mServices[lService] = true;
+                                }
+                            }
+
+                        }
                     }
                 }
             }
@@ -76,29 +149,292 @@ namespace McDoData
 
         private void sProcessOpeningHours(String pOpeningHours)
         {
-            List<string> lPars;
+            List<string> lLines;
 
-            lPars = sSplitOpening(pOpeningHours);
-            if (lPars.Count > 0)
+            lLines = sSplitOpening(pOpeningHours);
+            foreach (String lLine in lLines)
             {
-                bHoursMonday = lPars.ElementAt(0);
-                if (lPars.Count > 1)
+                if (lLine.Length > 0)
                 {
-                    bHoursTuesday = lPars.ElementAt(1);
-                    if (lPars.Count > 2)
+                    sProcessLine(lLine);
+                }
+            }
+            if (lLines.Count > 0)
+            {
+                bHoursMonday = lLines.ElementAt(0);
+                if (lLines.Count > 1)
+                {
+                    bHoursTuesday = lLines.ElementAt(1);
+                    if (lLines.Count > 2)
                     {
-                        bHoursWednesday = lPars.ElementAt(2);
-                        if (lPars.Count > 3)
+                        bHoursWednesday = lLines.ElementAt(2);
+                        if (lLines.Count > 3)
                         {
-                            bHoursThursday = lPars.ElementAt(3);
-                            if (lPars.Count > 4)
+                            bHoursThursday = lLines.ElementAt(3);
+                            if (lLines.Count > 4)
                             {
-                                bHoursFriday = lPars.ElementAt(4);
+                                bHoursFriday = lLines.ElementAt(4);
                             }
                         }
                     }
                 }
             }
+        }
+
+        private void sProcessLine(string pLine)
+        {
+            WordSplit lSplit;
+            string lSave;
+            int lStart;
+            int lEnd;
+            RestoTimes lTimes;
+            int lDay;
+
+            lSplit = sGetWord(pLine);
+            if (!lSplit.Word.Equals("ontbijt", StringComparison.OrdinalIgnoreCase))
+            {
+                lStart = sTestDay(lSplit.Word);
+                if (lStart >= 0)
+                {
+                    lSave = lSplit.Rest;
+                    lSplit = sGetWord(lSplit.Rest);
+                    if (sTestConnect(lSplit.Word))
+                    {
+                        lSplit = sGetWord(lSplit.Rest);
+                        lEnd = sTestDay(lSplit.Word);
+                        if (lEnd >= 0)
+                        {
+                            lTimes = sGetTimes(lSplit.Rest);
+                        } else
+                        {
+                            lTimes = new RestoTimes("");
+                        }
+                    } else
+                    {
+                        lEnd = lStart;
+                        lTimes = sGetTimes(lSave);
+                    }
+                    for (lDay = lStart; lDay <= lEnd; lDay++)
+                    {
+                        mRestoTimes[lDay] = lTimes;
+                    }
+                }
+            }
+        }
+
+        private RestoTimes sGetTimes(string pLine)
+        {
+            RestoTimes lTimes;
+            WordSplit lSplit;
+
+            lTimes = new RestoTimes("");
+
+            lSplit = sGetWord(pLine);
+            if (sTestTime(lSplit.Word))
+            {
+                lTimes.RestoOpen = lSplit.Word;
+                lSplit = sGetWord(lSplit.Rest);
+                if (lSplit.Word.Equals("pm", StringComparison.OrdinalIgnoreCase))
+                {
+                    lTimes.RestoOpen = sPmTime(lTimes.RestoOpen);
+                }
+                lSplit = sGetWord(lSplit.Rest);
+                lSplit = sGetWord(lSplit.Rest);
+                if (sTestTime(lSplit.Word))
+                {
+                    lTimes.RestoClose = lSplit.Word;
+                    lSplit = sGetWord(lSplit.Rest);
+                    if (lSplit.Word.Equals("pm", StringComparison.OrdinalIgnoreCase))
+                    {
+                        lTimes.RestoClose = sPmTime(lTimes.RestoClose);
+                    }
+                    if (lSplit.Rest.Length > 0)
+                    {
+                        lSplit = sGetWord(lSplit.Rest);
+                        if (lSplit.Word.Equals("drive", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lSplit = sGetWord(lSplit.Rest);
+                            lSplit = sGetWord(lSplit.Rest);
+                            if (sTestTime(lSplit.Word))
+                            {
+                                lTimes.DriveClose = lSplit.Word;
+                                lSplit = sGetWord(lSplit.Rest);
+                                if (lSplit.Word.Equals("pm", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    lTimes.DriveClose = sPmTime(lTimes.DriveClose);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (sTest24(lSplit.Word))
+                {
+                    lTimes.RestoOpen = "07:00";
+                    lTimes.RestoClose = "06:59";
+                }
+            }
+
+            return lTimes;
+        }
+        private string sPmTime(string pTime)
+        {
+            int lTime;
+            string lResult;
+
+            if (int.TryParse(pTime.Substring(0, 2), out lTime))
+            {
+                lTime += 12;
+                if (lTime >= 24) { lTime -= 24; }
+                lResult = lTime.ToString("D2") + pTime.Substring(2);
+            }
+            else
+            {
+                lResult = pTime;
+            }
+            return lResult;
+        }
+
+        private int sTestDay(string pDay)
+        {
+            int lCount;
+            int lResult;
+
+            lResult = -1;
+            for (lCount = 0; lCount < mDays.Length; lCount++)
+            {
+                if (pDay.Equals(mDays[lCount], StringComparison.OrdinalIgnoreCase))
+                {
+                    lResult = lCount;
+                    break;
+                }
+            }
+            return lResult;
+        }
+
+        private bool sTestConnect(string pConnect)
+        {
+            string[] lConnector = { "t.e.m.", "tem", "tot", "en" };
+            bool lResult;
+            int lCount;
+
+            lResult = false;
+            for (lCount = 0; lCount < lConnector.Length; lCount++)
+            {
+                if (pConnect.Equals(lConnector[lCount], StringComparison.OrdinalIgnoreCase))
+                {
+                    lResult = true;
+                    break;
+                }
+            }
+            return lResult;
+        }
+
+        private bool sTest24(string p24)
+        {
+            string[] l24Markers = { "24/24", "24u/24u", "24h/24h" };
+            bool lResult;
+            int lCount;
+
+            lResult = false;
+            for (lCount = 0; lCount < l24Markers.Length; lCount++)
+            {
+                if (p24.Equals(l24Markers[lCount], StringComparison.OrdinalIgnoreCase))
+                {
+                    lResult = true;
+                    break;
+                }
+            }
+            return lResult;
+        }
+
+        private bool sTestTime(string pTime)
+        {
+            bool lResult;
+
+            lResult = false;
+            if (pTime.Length == 5)
+            {
+                if (pTime.ElementAt(0) >= '0' && pTime.ElementAt(0) <= '9')
+                {
+                    if (pTime.ElementAt(1) >= '0' && pTime.ElementAt(1) <= '9')
+                    {
+                        if (pTime.ElementAt(2) == ':')
+                        {
+                            if (pTime.ElementAt(3) >= '0' && pTime.ElementAt(3) <= '9')
+                            {
+                                if (pTime.ElementAt(4) >= '0' && pTime.ElementAt(4) <= '9')
+                                {
+                                    lResult = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return lResult;
+        }
+
+        private WordSplit sGetWord(string pIn)
+        {
+            WordSplit lResult;
+            string lWord;
+
+            int lDelBlank;
+            int lDelComma;
+            int lLength;
+
+            if (pIn.Length > 0)
+            {
+                lDelBlank = pIn.IndexOf(' ');
+                lDelComma = pIn.IndexOf(',');
+                if (lDelBlank < 0)
+                {
+                    if (lDelComma < 0)
+                    {
+                        lLength = pIn.Length;
+                    }
+                    else
+                    {
+                        lLength = lDelComma;
+                    }
+                }
+                else
+                {
+                    if (lDelComma < 0)
+                    {
+                        lLength = lDelBlank;
+                    }
+                    else
+                    {
+                        if (lDelBlank < lDelComma)
+                        {
+                            lLength = lDelBlank;
+                        }
+                        else
+                        {
+                            lLength = lDelComma;
+                        }
+                    }
+                }
+                lResult.Word = pIn.Substring(0, lLength);
+                if (lResult.Word.Length < pIn.Length)
+                {
+                    lResult.Rest = pIn.Substring(lResult.Word.Length + 1).TrimStart();
+                }
+                else
+                {
+                    lResult.Rest = "";
+                }
+            }
+            else
+            {
+                lResult.Word = "";
+                lResult.Rest = "";
+            }
+            return lResult;
         }
 
         private void sProcessResto(JObject pResto)
@@ -134,13 +470,13 @@ namespace McDoData
         {
             const string cStartPar = "<p>";
             const string cEndPar = "</p>";
-            List<string> lPars;
+            List<string> lLines;
             int lStart;
             int lBegin;
             int lEnd;
-            string lPar;
+            string lLine;
 
-            lPars = new List<string>();
+            lLines = new List<string>();
 
             lStart = 0;
             while (lStart < pOpeningHours.Length)
@@ -154,102 +490,93 @@ namespace McDoData
                     {
                         if (lEnd > lBegin)
                         {
-                            lPar = pOpeningHours.Substring(lBegin, lEnd - lBegin);
-                            lPar = sCleanPar(lPar);
-                            if (lPar.Length > 0)
+                            lLine = pOpeningHours.Substring(lBegin, lEnd - lBegin);
+                            lLine = sCleanLine(lLine);
+                            if (lLine.Length > 0)
                             {
-                                lPars.Add(lPar);
+                                lLines.Add(lLine);
                             }
                         }
                         lStart = lEnd + cEndPar.Length;
-                    } else
+                    }
+                    else
                     {
                         lStart = pOpeningHours.Length;
                     }
-                } else
+                }
+                else
                 {
                     lStart = pOpeningHours.Length;
                 }
             }
 
-            return lPars;
+            return lLines;
         }
 
-        private string sCleanPar(string pPar)
+        private string sCleanLine(string pLine)
         {
-            string lPar;
-            int lStart = 0;
+            string lLine;
             int lBegin;
             int lEnd;
             string lPart1;
             string lPart2;
             bool lReady = false;
 
-            lPar = pPar;
+            lLine = pLine;
             do
             {
-                if (lPar.Length == 0)
+                if (lLine.Length == 0)
                 {
                     lReady = true;
-                } else
+                }
+                else
                 {
-                    lBegin = lPar.IndexOf('<');
+                    lBegin = lLine.IndexOf('<');
                     if (lBegin < 0)
                     {
                         lReady = true;
                     }
                     else
                     {
-                        lPart1 = lPar.Substring(0, lBegin);
-                        lEnd = lPar.IndexOf('>', lBegin + 1);
+                        lPart1 = lLine.Substring(0, lBegin);
+                        lEnd = lLine.IndexOf('>', lBegin + 1);
                         if (lEnd < 0)
                         {
                             lPart2 = "";
                         }
                         else
                         {
-                            lPart2 = lPar.Substring(lEnd + 1);
+                            lPart2 = lLine.Substring(lEnd + 1);
                         }
                         if (lPart2.Length > 0)
                         {
-                            lPar = lPart1 + " " + lPart2;
+                            lLine = lPart1 + " " + lPart2;
                         }
                         else
                         {
-                            lPar = lPart1;
+                            lLine = lPart1;
                         }
                     }
                 }
             } while (!lReady);
 
-            lReady = false;
-            do
-            {
-                lPart1 = lPar.Replace("&nbsp;", " ");
-                if (lPar.Equals(lPart1, StringComparison.Ordinal))
-                {
-                    lReady = true;
-                } else
-                {
-                    lPar = lPart1;
-                }
-            } while (!lReady);
+            lLine = lLine.Replace("&nbsp;", " ");
 
             lReady = false;
             do
             {
-                lPart1 = lPar.Replace("  ", " ");
-                if (lPar.Equals(lPart1, StringComparison.Ordinal))
+                lPart1 = lLine.Replace("  ", " ");
+                if (lLine.Equals(lPart1, StringComparison.Ordinal))
                 {
                     lReady = true;
                 }
                 else
                 {
-                    lPar = lPart1;
+                    lLine = lPart1;
                 }
             } while (!lReady);
 
-            return lPar.Trim();
+            return lLine.Trim();
         }
     }
 }

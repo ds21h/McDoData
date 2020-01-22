@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace McDoData
         private DataNL mDataNL;
         private DataBE mDataBE;
         private List<Resto> mRestos;
+        private string mCurrent;
 
         private delegate void dFillResult(bool pFree);
         private dFillResult hFillResult;
@@ -28,6 +30,8 @@ namespace McDoData
             mDataBE = new DataBE();
             mDataBE.eListComplete += hListCompleteBE;
             mDataBE.eReadComplete += hCompleteBE;
+            mCurrent = "";
+            mRestos = new List<Resto>();
         }
 
         private void BtnNL_Click(object sender, EventArgs e)
@@ -46,24 +50,28 @@ namespace McDoData
         {
             BtnNL.Enabled = false;
             BtnBE.Enabled = false;
+            BtnCsv.Enabled = false;
             DgrdResult.RowCount = 0;
             DgrdResult.Invalidate();
         }
 
         private void hCompleteNL(Object pSender, EventArgs pArgs)
         {
+            mCurrent = Resto.CountryNL;
             mRestos = mDataNL.xRestos();
             this.Invoke(hFillResult, true);
         }
 
         private void hListCompleteBE(Object pSender, EventArgs pArgs)
         {
+            mCurrent = Resto.CountryBE;
             mRestos = mDataBE.xRestos();
             this.Invoke(hFillResult, false);
         }
 
         private void hCompleteBE(Object pSender, EventArgs pArgs)
         {
+            mCurrent = Resto.CountryBE;
             mRestos = mDataBE.xRestos();
             this.Invoke(hFillResult, true);
         }
@@ -76,8 +84,10 @@ namespace McDoData
             DgrdResult.Invalidate();
             if (pFree)
             {
+
                 BtnNL.Enabled = true;
                 BtnBE.Enabled = true;
+                BtnCsv.Enabled = true;
             }
         }
 
@@ -156,6 +166,32 @@ namespace McDoData
                     case 21:
                         pArgs.Value = lResto.xDriveHoursSunday;
                         break;
+                }
+            }
+        }
+
+        private void BtnCsv_Click(object sender, EventArgs e)
+        {
+            string lBaseName;
+            FileInfo lFile;
+            StreamWriter lFileOut;
+            int lSeq;
+            int lCount;
+
+            lBaseName = "McDoData" + mCurrent + " - " + DateTime.Now.ToString("yyyyMMdd");
+            lSeq = 0;
+            lFile = new FileInfo(lBaseName + ".csv");
+            while (lFile.Exists)
+            {
+                lSeq++;
+                lFile = new FileInfo(lBaseName + "." + lSeq.ToString() + ".csv");
+            }
+            using (lFileOut = new StreamWriter(lFile.FullName))
+            {
+                lFileOut.WriteLine(Resto.xCsvHeader());
+                for (lCount = 0; lCount < mRestos.Count; lCount++)
+                {
+                    lFileOut.WriteLine(mRestos[lCount].xCsvValues());
                 }
             }
         }

@@ -30,9 +30,6 @@
         {
             this.BtnNL = new System.Windows.Forms.Button();
             this.DgrdResult = new System.Windows.Forms.DataGridView();
-            this.PnlControl = new System.Windows.Forms.Panel();
-            this.BtnBE = new System.Windows.Forms.Button();
-            this.PnlResult = new System.Windows.Forms.Panel();
             this.ClmID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmDescr = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,6 +52,10 @@
             this.ClmSaturdayDrive = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmSunday = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClmSundayDrive = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PnlControl = new System.Windows.Forms.Panel();
+            this.BtnBE = new System.Windows.Forms.Button();
+            this.PnlResult = new System.Windows.Forms.Panel();
+            this.BtnCsv = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DgrdResult)).BeginInit();
             this.PnlControl.SuspendLayout();
             this.PnlResult.SuspendLayout();
@@ -106,35 +107,6 @@
             this.DgrdResult.TabIndex = 1;
             this.DgrdResult.VirtualMode = true;
             this.DgrdResult.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgrdResult_CellValueNeeded);
-            // 
-            // PnlControl
-            // 
-            this.PnlControl.Controls.Add(this.BtnBE);
-            this.PnlControl.Controls.Add(this.BtnNL);
-            this.PnlControl.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.PnlControl.Location = new System.Drawing.Point(0, 579);
-            this.PnlControl.Name = "PnlControl";
-            this.PnlControl.Size = new System.Drawing.Size(1090, 46);
-            this.PnlControl.TabIndex = 2;
-            // 
-            // BtnBE
-            // 
-            this.BtnBE.Location = new System.Drawing.Point(93, 12);
-            this.BtnBE.Name = "BtnBE";
-            this.BtnBE.Size = new System.Drawing.Size(75, 23);
-            this.BtnBE.TabIndex = 1;
-            this.BtnBE.Text = "BE";
-            this.BtnBE.UseVisualStyleBackColor = true;
-            this.BtnBE.Click += new System.EventHandler(this.BtnBE_Click);
-            // 
-            // PnlResult
-            // 
-            this.PnlResult.Controls.Add(this.DgrdResult);
-            this.PnlResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PnlResult.Location = new System.Drawing.Point(0, 0);
-            this.PnlResult.Name = "PnlResult";
-            this.PnlResult.Size = new System.Drawing.Size(1090, 579);
-            this.PnlResult.TabIndex = 3;
             // 
             // ClmID
             // 
@@ -312,6 +284,46 @@
             this.ClmSundayDrive.ReadOnly = true;
             this.ClmSundayDrive.Width = 57;
             // 
+            // PnlControl
+            // 
+            this.PnlControl.Controls.Add(this.BtnCsv);
+            this.PnlControl.Controls.Add(this.BtnBE);
+            this.PnlControl.Controls.Add(this.BtnNL);
+            this.PnlControl.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.PnlControl.Location = new System.Drawing.Point(0, 579);
+            this.PnlControl.Name = "PnlControl";
+            this.PnlControl.Size = new System.Drawing.Size(1090, 46);
+            this.PnlControl.TabIndex = 2;
+            // 
+            // BtnBE
+            // 
+            this.BtnBE.Location = new System.Drawing.Point(93, 12);
+            this.BtnBE.Name = "BtnBE";
+            this.BtnBE.Size = new System.Drawing.Size(75, 23);
+            this.BtnBE.TabIndex = 1;
+            this.BtnBE.Text = "BE";
+            this.BtnBE.UseVisualStyleBackColor = true;
+            this.BtnBE.Click += new System.EventHandler(this.BtnBE_Click);
+            // 
+            // PnlResult
+            // 
+            this.PnlResult.Controls.Add(this.DgrdResult);
+            this.PnlResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PnlResult.Location = new System.Drawing.Point(0, 0);
+            this.PnlResult.Name = "PnlResult";
+            this.PnlResult.Size = new System.Drawing.Size(1090, 579);
+            this.PnlResult.TabIndex = 3;
+            // 
+            // BtnCsv
+            // 
+            this.BtnCsv.Location = new System.Drawing.Point(198, 12);
+            this.BtnCsv.Name = "BtnCsv";
+            this.BtnCsv.Size = new System.Drawing.Size(75, 23);
+            this.BtnCsv.TabIndex = 2;
+            this.BtnCsv.Text = "To Csv";
+            this.BtnCsv.UseVisualStyleBackColor = true;
+            this.BtnCsv.Click += new System.EventHandler(this.BtnCsv_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -357,6 +369,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSaturdayDrive;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSunday;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClmSundayDrive;
+        private System.Windows.Forms.Button BtnCsv;
     }
 }
 

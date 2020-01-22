@@ -78,13 +78,19 @@ namespace McDoData
             int lCount;
 
             mRestos.Clear();
-            lReply = JObject.Parse(mResData);
-            lRestos = lReply.Value<JArray>("features");
-            for (lCount = 0; lCount < lRestos.Count; lCount++)
+            try
             {
-                lResto = (JObject)lRestos.ElementAt(lCount);
-                lRestNl = new RestoNL(lResto);
-                mRestos.Add(lRestNl);
+                lReply = JObject.Parse(mResData);
+                lRestos = lReply.Value<JArray>("features");
+                for (lCount = 0; lCount < lRestos.Count; lCount++)
+                {
+                    lResto = (JObject)lRestos.ElementAt(lCount);
+                    lRestNl = new RestoNL(lResto);
+                    mRestos.Add(lRestNl);
+                }
+            } catch (Exception pExc)
+            {
+
             }
         }
     }

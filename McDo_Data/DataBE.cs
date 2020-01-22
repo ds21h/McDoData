@@ -13,7 +13,6 @@ namespace McDoData
         private static string cUrlList = "https://www.mcdonalds.be/nl/restaurant";
         private static string cUrlDetail = "https://www.mcdonalds.be/nl/2iufriuwlu?id=";
         private static string cRestosKey = "var restos = ";
-        private String mResData;
         private List<RestoBE> mRestos;
 
         internal event EventHandler eListComplete;

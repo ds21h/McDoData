@@ -31,19 +31,10 @@ namespace McDoData
 
         private readonly string[] mDays = { "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag" };
         private RestoTimes[] mRestoTimes;
-        private readonly string[] mServiceNames = { "Wifi", "Drive", "Play", "Parking", "BreakfastLight", "Terrace", "DebitCard", "E-cheque", "EasyOrder", "LateOpen", "EVCharge", "BreakfastFull", "Wheelchair", "TableService", "Delivery" };
-        private bool[] mServices;
-
-        private RestoBE() : base()
-        {
-            sInitRestoTimes();
-            sInitServices();
-        }
 
         internal RestoBE(JObject pResto) : base()
         {
             sInitRestoTimes();
-            sInitServices();
 
             bCountry = CountryBE;
             sProcessResto(pResto);
@@ -57,17 +48,6 @@ namespace McDoData
             for (lCount = 0; lCount < mRestoTimes.Length; lCount++)
             {
                 mRestoTimes[lCount] = new RestoTimes("");
-            }
-        }
-
-        private void sInitServices()
-        {
-            int lCount;
-
-            mServices = new bool[mServiceNames.Length];
-            for (lCount = 0; lCount < mServices.Length; lCount++)
-            {
-               mServices[lCount] = false;
             }
         }
 
@@ -135,15 +115,99 @@ namespace McDoData
                             for (lCount = 0; lCount < lServices.Count; lCount++)
                             {
                                 lService = (int)lServices[lCount];
-                                if (lService < mServices.Length)
+                                if (lService <= bServices.Length)
                                 {
-                                    mServices[lService] = true;
+                                    bServices[lService - 1] = true;
                                 }
                             }
-
                         }
+                        sFillOpeningHours();
                     }
                 }
+            }
+        }
+
+        private void sFillOpeningHours()
+        {
+            string lDriveClose;
+
+            bHoursMonday = mRestoTimes[0].RestoOpen + " - " + mRestoTimes[0].RestoClose;
+            bHoursTuesday = mRestoTimes[1].RestoOpen + " - " + mRestoTimes[1].RestoClose;
+            bHoursWednesday = mRestoTimes[2].RestoOpen + " - " + mRestoTimes[2].RestoClose;
+            bHoursThursday = mRestoTimes[3].RestoOpen + " - " + mRestoTimes[3].RestoClose;
+            bHoursFriday = mRestoTimes[4].RestoOpen + " - " + mRestoTimes[4].RestoClose;
+            bHoursSaturday = mRestoTimes[5].RestoOpen + " - " + mRestoTimes[5].RestoClose;
+            bHoursSunday = mRestoTimes[6].RestoOpen + " - " + mRestoTimes[6].RestoClose;
+            if (bServices[1])
+            {
+                if (mRestoTimes[0].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[0].DriveClose;
+                } else
+                {
+                    lDriveClose = mRestoTimes[0].RestoClose;
+                }
+                bDriveHoursMonday = mRestoTimes[0].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[1].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[1].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[1].RestoClose;
+                }
+                bDriveHoursTuesday = mRestoTimes[1].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[2].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[2].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[2].RestoClose;
+                }
+                bDriveHoursWednesday = mRestoTimes[2].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[3].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[3].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[3].RestoClose;
+                }
+                bDriveHoursThursday = mRestoTimes[3].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[4].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[4].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[4].RestoClose;
+                }
+                bDriveHoursFriday = mRestoTimes[4].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[5].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[5].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[5].RestoClose;
+                }
+                bDriveHoursSaturday = mRestoTimes[5].RestoOpen + " - " + lDriveClose;
+
+                if (mRestoTimes[6].DriveClose.Length > 0)
+                {
+                    lDriveClose = mRestoTimes[6].DriveClose;
+                }
+                else
+                {
+                    lDriveClose = mRestoTimes[6].RestoClose;
+                }
+                bDriveHoursSunday = mRestoTimes[6].RestoOpen + " - " + lDriveClose;
             }
         }
 
@@ -157,26 +221,6 @@ namespace McDoData
                 if (lLine.Length > 0)
                 {
                     sProcessLine(lLine);
-                }
-            }
-            if (lLines.Count > 0)
-            {
-                bHoursMonday = lLines.ElementAt(0);
-                if (lLines.Count > 1)
-                {
-                    bHoursTuesday = lLines.ElementAt(1);
-                    if (lLines.Count > 2)
-                    {
-                        bHoursWednesday = lLines.ElementAt(2);
-                        if (lLines.Count > 3)
-                        {
-                            bHoursThursday = lLines.ElementAt(3);
-                            if (lLines.Count > 4)
-                            {
-                                bHoursFriday = lLines.ElementAt(4);
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -214,9 +258,23 @@ namespace McDoData
                         lEnd = lStart;
                         lTimes = sGetTimes(lSave);
                     }
-                    for (lDay = lStart; lDay <= lEnd; lDay++)
+                    if (lStart > lEnd)
                     {
-                        mRestoTimes[lDay] = lTimes;
+                        for (lDay = lStart; lDay < mRestoTimes.Length; lDay++)
+                        {
+                            mRestoTimes[lDay] = lTimes;
+                        }
+                        for (lDay = 0; lDay <= lEnd; lDay++)
+                        {
+                            mRestoTimes[lDay] = lTimes;
+                        }
+
+                    } else
+                    {
+                        for (lDay = lStart; lDay <= lEnd; lDay++)
+                        {
+                            mRestoTimes[lDay] = lTimes;
+                        }
                     }
                 }
             }

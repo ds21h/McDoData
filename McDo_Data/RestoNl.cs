@@ -146,6 +146,8 @@ namespace McDoData
                 lJObject = lProp["drivethruhours"];
                 if (lJObject != null)
                 {
+                    bServices[1] = true;
+
                     lHours = (JObject)lJObject;
 
                     lValue = (JValue)lHours["driveHoursMonday"];
